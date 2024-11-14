@@ -1,6 +1,9 @@
 #!/bin/bash
-source setup_board.sh
-source check_win.sh
+source src/setup_board.sh
+source src/check_win.sh
+source src/validators.sh
+source src/save-load.sh
+source src/hex.sh
 
 boardArray=""
 
@@ -8,35 +11,6 @@ BOARD_SIZE=4
 WINING_LENGTH=3
 EMPTY_CHAR='_'
 SAVE_FILE='autosave.txt'
-
-read_board() {
-  if [[ -f "$SAVE_FILE" ]]; then
-    boardArray=$(cat $SAVE_FILE | tr '\n' '.')
-    echo 'Loaded last game'
-  else
-    for ((i = 0; i < $BOARD_SIZE; i++)); do
-      for ((j = 0; j < $BOARD_SIZE; j++)); do
-        boardArray+=$EMPTY_CHAR
-        [[ $j < $((BOARD_SIZE - 1)) ]] && boardArray+="|"
-      done
-      [[ $i < $((BOARD_SIZE - 1)) ]] && boardArray+="."
-    done
-    echo 'Generated new board'
-  fi
-}
-
-save_board() {
-  raw=(${boardArray//./\\n})
-  echo -en $raw >$SAVE_FILE
-}
-
-num_to_hex() {
-  echo "obase=16; $1" | bc
-}
-
-hex_to_num() {
-  echo "ibase=16; ${1:0:8}" | bc
-}
 
 draw_board() {
   to_print=${1-$boardArray}
@@ -51,27 +25,6 @@ draw_board() {
   for i in "${!rows[@]}"; do
     echo -e $(num_to_hex $i)\\t${rows[i]}
   done
-}
-
-assert() {
-  if [[ $1 -ne 1 ]]; then
-    echo "$2"
-    exit 1
-  fi
-}
-
-validate_cords() {
-  where=$1 #cords in XX format
-  assert "((${#where} == 2))" "invalid cords!"
-
-  x=$(hex_to_num ${where:0:1})
-  y=$(hex_to_num ${where:1:1})
-  assert "(($x < $BOARD_SIZE && $y < $BOARD_SIZE))" "cords out of bonds!"
-
-  idx=$(((y + (x * $BOARD_SIZE)) * 2))
-  at_index=${boardArray:idx:1}
-  assert "$([[ $at_index == $EMPTY_CHAR ]] && echo 1)" "Invalid move!"
-  return 0
 }
 
 takePlayerInput() {
@@ -94,8 +47,6 @@ make_move() {
   idx=$(((y + (x * $BOARD_SIZE)) * 2))
   boardArray="${boardArray:0:idx}$who${boardArray:idx+1}"
 }
-
-
 
 #welcome_info
 #wait_for_any_key

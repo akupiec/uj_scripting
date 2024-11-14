@@ -8,7 +8,9 @@ function State.new()
 
   self.window = { w = 800, h = 600, vsync = 1 }
   self.name = "ArtNotTetris"
-  self.mode = GameMode.Menu
+  self.mode = GameMode.Running
+  self.score = 9999999999
+  self.lvl = 1
   self.font = love.graphics.newFont("assets/fonts/surrendere/surrendere.otf", 18)
   self.font44 = love.graphics.newFont("assets/fonts/surrendere/surrendere.otf", 44)
   return self

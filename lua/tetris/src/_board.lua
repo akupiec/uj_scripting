@@ -1,4 +1,4 @@
-local Board = require("tilesArea")
+local Board = require("tileArea")
 local Shape = require("shape")
 
 local game_over = false

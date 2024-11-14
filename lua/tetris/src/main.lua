@@ -14,7 +14,7 @@ function love.load()
 
   local menuActions = MenuActions.new(state)
   menu = Menu.new(state, menuActions)
-  board = Board.new()
+  board = Board.new(state)
 
   io.stdout:setvbuf("no")
 end

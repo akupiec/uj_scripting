@@ -36,7 +36,7 @@ function GameOverMenu:draw()
   love.graphics.setFont(self.state.font44)
   love.graphics.setColor(ButtonConfig.hoverColor)
   love.graphics.printf(
-    self.state.name,
+    "Game Over",
     0,
     70,
     self.state.window.w,

@@ -10,7 +10,7 @@ function MenuActions.new(state)
     love.event.quit()
   end
   self.startGame = function()
-    self.state.mode = GameMode.Running
+    self.state:startNewGame()
   end
   self.resumeGame = function()
     self.state.mode = GameMode.Running

@@ -9,6 +9,9 @@ function BoardActions.new(state)
   self.gameOver = function()
     self.state.mode = GameMode.GameOver
   end
+  self.updateNextShape = function()
+    self.state:updateNextShape()
+  end
   return self
 end
 

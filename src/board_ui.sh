@@ -117,6 +117,9 @@ new_game() {
         new_board
         break
       fi
+    else
+      new_board
+      break
     fi
   done
 

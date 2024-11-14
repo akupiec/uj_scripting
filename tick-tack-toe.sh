@@ -44,7 +44,7 @@ main() {
     local end=$(check_win)$?
     if ((end > 0)); then
       clear_board
-      save_board
+      remove_board
       show_win "$end"
       break
     fi

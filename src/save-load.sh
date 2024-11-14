@@ -29,3 +29,7 @@ save_board() {
   echo "WINING_LENGTH=$WINING_LENGTH" >> $SAVE_FILE
   echo -en $raw >> $SAVE_FILE
 }
+
+remove_board() {
+  rm $SAVE_FILE
+}

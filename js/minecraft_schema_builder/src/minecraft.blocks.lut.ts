@@ -16,47 +16,113 @@ function trimMeta(k, v) {
 }
 
 function axis(k) {
-  return k.replace(/axis=([xyz])/, "\"pillar_axis\":\"$1\"");
+  return k.replace(/axis=([xyz])/, '"pillar_axis":"$1"');
 }
 
-
-function facingTo4Str(k, str = "facing") {
-  function compasDirToNr (str) {
-    switch (str) {
-      case "east" : return 3;
-      case "north" : return 2;
-      case "south" : return 0;
-      case "west" : return 1;
-    }
-  }
-  const match = k.match(/facing=(\w+)/)[1];
-  return k.replace(/facing=\w+/, `"${str}":${compasDirToNr(match)}`)
-}
-
-function facingTo6Str(k, str = "facing") {
-  function compasDirToNr (str) {
-    switch (str) {
-      case "up" : return 1;
-      case "down" : return 0;
-      case "east" : return 5;
-      case "north" : return 2;
-      case "south" : return 3;
-      case "west" : return 4;
-    }
-  }
-  const match = k.match(/facing=(\w+)/)[1];
-  return k.replace(/facing=\w+/, `"${str}":${compasDirToNr(match)}`)
+function metaConverter(
+  k: string,
+  meta = "facing",
+  str = "facing",
+  map: object = {east: 0, west: 1, south: 2, north: 3},
+) {
+  const matcher = new RegExp(`${meta}=(\\w+)`);
+  const match = k.match(matcher)[1];
+  return k.replace(matcher, `"${str}":${map[match]}`);
 }
 
 function partMeta(k) {
-  const match = (k.match(/part=(\w+)/)[1] === 'head') ? "true" : "false";
-  return k.replace(/part=(\w+)/, `"head_piece_bit":"${match}"`)
+  const match = k.match(/part=(\w+)/)[1] === "head" ? "true" : "false";
+  return k.replace(/part=(\w+)/, `"head_piece_bit":${match}`);
+}
+
+function halfMeta_broken(k, str = "upper_block_bit") {
+  const regExp = /half=(\w+)/;
+  const match = k.match(regExp)[1] === "upper" ? "true" : "false";
+  return k.replace(regExp, `"${str}":${match}`);
+}
+
+function hingeMeta(k) {
+  const regExp = /hinge=(\w+)/;
+  let match = k.match(regExp)[1] === "right" ? "true" : "false";
+  return k.replace(regExp, `"door_hinge_bit":${match}`);
 }
 
 function metaMatchToStr(k: string, meta: string, str = "out") {
-  const regexp = new RegExp(`${meta}=(\\w+)`)
+  const regexp = new RegExp(`${meta}=(\\w+)`);
   const match = k.match(regexp)[1];
-  return k.replace(regexp, `"${str}":"${match}"`)
+  return k.replace(regexp, `"${str}":"${match}"`);
+}
+
+function metaMatchToNr(k: string, meta: string, str = "out") {
+  const regexp = new RegExp(`${meta}=(\\w+)`);
+  const match = k.match(regexp)[1];
+  return k.replace(regexp, `"${str}":${match}`);
+}
+
+function removeSingleMeta(k, meta: string) {
+  return k.replace(new RegExp(`,${meta}=(\\w+)`), ``);
+}
+
+function slab(k: string) {
+  if (k.includes("type=double")) {
+    return "Dark Oak Planks";
+  }
+  k = removeSingleMeta(metaMatchToStr(k, "type", "minecraft:vertical_half"), "waterlogged");
+  return k.replace(/[\w_]+\[/, "oak_slab[");
+}
+
+const endRod = (k: string) =>
+  metaConverter(k, "facing", "facing_direction", {
+    up: 1,
+    down: 0,
+    east: 5,
+    north: 2,
+    south: 3,
+    west: 4,
+  });
+
+const bed = (k: string) => {
+  k = metaConverter(k, "facing", "direction", {
+    south: 0,
+    west: 1,
+    north: 2,
+    east: 3,
+  });
+  return partMeta(metaMatchToNr(k, "occupied", "occupied_bit"))
+}
+
+function trapDoor(k: string) {
+  k = k.replace('oak_trapdoor', 'trapdoor')
+  const k1 = metaConverter(k, "facing", "direction", {
+    west: 1,
+    east: 0,
+    north: 3,
+    south: 2,
+  })
+  const k2 = metaConverter(k1, "half", "upside_down_bit", {top: true, bottom: false});
+  const k3 = metaMatchToNr(k2, "open", "open_bit");
+  return removeSingleMeta(removeSingleMeta(k3, "waterlogged",), "powered",);
+}
+
+function door(k: string) {
+  const k1 = metaConverter(k, "facing", "direction", {
+    east: 0,
+    south: 1,
+    west: 2,
+    north: 3,
+  })
+  return removeSingleMeta(metaMatchToNr(hingeMeta(halfMeta_broken(k1)), "open", "open_bit"), "powered",);
+}
+
+function stairs(k) {
+  const k1 = metaConverter(k, "facing", "weirdo_direction", {
+    east: 0,
+    west: 1,
+    south: 2,
+    north: 3,
+  })
+  const k2 = metaConverter(k1, "half", "upside_down_bit", {bottom: false, top: true});
+  return removeSingleMeta(removeSingleMeta(k2, "shape"), "waterlogged",);
 }
 
 export function toBeadRockEdition(plette: object) {
@@ -64,49 +130,53 @@ export function toBeadRockEdition(plette: object) {
     Object.entries(plette).map(([k, v]) => {
       k = k.replace("minecraft:", "");
       v = v.value;
+      k = k.replace("polished_deepslate", "polished_andesite");
+      k = k.replace("cobbled_deepslate", "andesite");
+
       if (k.includes("_wall[")) return wall(k, v);
       if (k.includes("_torch")) return torch(k, v);
-      if (k.includes("cake[")) return [v, metaMatchToStr(k, 'bites', 'bite_counter')];
-      if (k.includes("end_rod[")) return [v, facingTo6Str(k, 'facing_direction')];
-      if (k.includes("hay_block[")) return [v, axis(k)];
-      if (k.includes("_bed[")) {
-        const k1 = facingTo4Str(k, 'direction');
-        const s = metaMatchToStr(k1, 'occupied', 'occupied_bit');
-        return [v, partMeta(s)];
-      }
+      if (k.includes("cake[")) return [v, metaMatchToStr(k, "bites", "bite_counter")];
+      if (k.includes("end_rod[")) return [v, endRod(k)];
+      if (k.includes("hay_block[") || k.includes("_wood[axis")) return [v, axis(k)];
+      if (k.includes("_bed[")) return [v, bed(k)];
+      if (k.includes("trapdoor[")) return [v, trapDoor(k)];
+      if (k.includes("door[") && k.includes("half=upper")) return [v, "Air"];
+      if (k.includes("door[")) return [v, door(k),];
+      if (k.includes("stairs[")) return [v, stairs(k)];
+      if (k.includes("_slab[")) return [v, slab(k)];
 
-      if (k.includes("_air")
-        || k.includes("spawner")
-        || k.includes("seagrass")
-        || k.includes("stripped_mangrove_wood")
-        || k.includes("head")
-        || k.includes("_wall_banner")
-        || k.includes("tuff"))
+      if (
+        k.includes("_air") ||
+        k.includes("spawner") ||
+        k.includes("seagrass") ||
+        k.includes("_wall_sign") ||
+        k.includes("head") ||
+        k.includes("_wall_banner")
+      )
         return [v, `Air`];
 
+      if (k.includes("dripstone_block")) return [v, `Coal Block`];
       if (k.includes("_fence")) return [v, `Nether Brick Fence`];
       if (k.includes("_bricks")) return [v, `Stone Bricks`];
-
-      if (k.includes("_stairs")) return [v, `Oak Stairs`];
-      if (k.includes("_slab")) return [v, `Oak Slab`];
       if (k.includes("smooth")) return [v, capitalizeAll(k.replace("smooth", "")).trim()];
       if (k.includes("candle")) return [v, `Torch`];
       if (k.includes("calcite")) return [v, `White Wool`];
+      if (k.includes("rooted_dirt")) return [v, `Dirt`];
+      if (k.includes("tuff")) return [v, `Cobblestone`];
+      if (k.includes("stripped_mangrove_wood")) return [v, `Cobblestone`];
 
       if (
         k.includes("grass") ||
         k.includes("water") ||
         k.includes("basalt") ||
-        k.includes("button") ||
         k.includes("fire") ||
         k.includes("barrel") ||
         k.includes("lectern") ||
         k.includes("plate") ||
         k.includes("hopper") ||
         k.includes("box") ||
-        k.includes("podzol") ||
-        k.includes("stripped_spruce_wood") ||
-        k.includes("door")
+        k.includes("button") ||
+        k.includes("podzol")
       ) {
         return trimMeta(k, v);
       }

@@ -4,7 +4,7 @@ import { lz77Compress } from "./lz77Compress";
 import { encodeBase1023 } from "./encodeBase1023";
 import { toBeadRockEdition } from "../minecraft.blocks.lut";
 import Pbf from "pbf";
-import {utf8} from "cbor/types/lib/utils";
+import { utf8 } from "cbor/types/lib/utils";
 
 export function parseSchema(shemaFilePath: string) {
   return new Promise((resolve, reject) => {
@@ -32,8 +32,8 @@ export function parseSchema(shemaFilePath: string) {
       }
 
       // fs.writeFileSync('out.json', JSON.stringify(data.value.Palette.value, undefined, 2), 'utf-8');
-      // const compressed = lz77Compress(blockData, 1022);
-      // const encoded = encodeBase1023(compressed);
+      // blockData = lz77Compress(blockData, 1022);
+      blockData = encodeBase1023(blockData);
       const parsedData = {
         size: size,
         palette: palette,

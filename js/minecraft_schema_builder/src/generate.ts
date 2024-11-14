@@ -24,7 +24,8 @@ mc_script += `
 player.say("Decoding data...");
 const dd = decodeBase1023(data.data);
 player.say("Decompressing data...");
-const blockData: any[] = data.data;
+// const blockData: any[] = data.data;
+const blockData: any[] = dd;
 // const blockData: any[] = lz77Decompress(dd);
 player.say("Data ready! Building :D")
 
@@ -32,7 +33,7 @@ const size: number[] = data.size;
 const sPos = pos(0, 0, 0).toWorld();
 
 cleanSpace(sPos, size);
-buildAll(sPos, 210012, blockData.length, size);
+buildAll(sPos, 25, size[0], size);
 //buildPalette(sPos, data.palette, 80);
 `;
 

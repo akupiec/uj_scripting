@@ -1,4 +1,3 @@
--- shape.lua
 local Shape = {}
 Shape.__index = Shape
 

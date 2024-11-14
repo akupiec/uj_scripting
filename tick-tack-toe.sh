@@ -52,59 +52,65 @@ draw_board() {
   done
 }
 
-generate_reverted_board() {
-  reverted=""
-  rows=(${boardArray//./ })
+generate_win_board() {
+  ret=(${to_print//|/})
+  echo $ret
+}
+
+generate_reverted_win_board() {
+  ret=""
   for ((i = 0; i < $BOARD_SIZE; i++)); do
     for ((j = 0; j < $BOARD_SIZE; j++)); do
       idx=$(((i + (j * $BOARD_SIZE)) * 2))
-      reverted+=${boardArray:idx:1}
+      ret+=${boardArray:idx:1}
     done
-    [[ $i < $((BOARD_SIZE - 1)) ]] && reverted+="."
+    ret+="."
   done
 
-  echo $reverted
+  echo $ret
 }
 
-generate_diagonal_board() {
-  reverted=""
-  rows=(${boardArray//./ })
+generate_diagonal_win_board() {
+  ret=""
   for ((i = 0; i < $BOARD_SIZE; i++)); do
     x=$i
     r0=""
     r1=""
     for ((j = 0; j < $BOARD_SIZE; j++)); do
-      r0=$r0$j$x" "
-      (($j!=$x)) && r1=$r1$x$j" "
+      idx0=$(((x + (j * $BOARD_SIZE)) * 2))
+      idx1=$(((j + (x * $BOARD_SIZE)) * 2))
+      r0=$r0${boardArray:idx0:1}
+      r1=$r1${boardArray:idx1:1}
       ((x++))
       if (($x == $BOARD_SIZE)); then
         break
       fi
     done
-    echo $r0
-    echo $r1
+    ret+=$r0"."$r1"."
   done
+  echo $ret
 }
 
-generate_anti_diagonal_board() {
-  reverted=""
-  rows=(${boardArray//./ })
-  len=$((BOARD_SIZE-1))
+generate_anti_diagonal_win_board() {
+  ret=""
+  len=$((BOARD_SIZE - 1))
   for ((i = $len; i >= 0; i--)); do
     x=$i
     r0=""
     r1=""
     for ((j = 0; j < $BOARD_SIZE; j++)); do
-      r0=$r0$j$x" "
-      (($i != $len)) && r1=$r1$(($len - x))$(($len - j))" "
+      idx0=$(((x + (j * $BOARD_SIZE)) * 2))
+      idx1=$((($len - x + ((($len - j)) * $BOARD_SIZE)) * 2))
+      r0=$r0${boardArray:idx0:1}
+      r1=$r1${boardArray:idx1:1}
       ((x--))
       if (($x < 0)); then
         break
       fi
     done
-    echo $r0
-    echo $r1
+    ret+=$r0"."$r1"."
   done
+  echo $ret
 }
 
 assert() {
@@ -172,16 +178,17 @@ check_win() {
 #wait_for_any_key
 read_board
 save_board
-clear_console
+#clear_console
 
 draw_board
 echo
 #draw_board "$(generate_reverted_board)"
 #draw_board "$(generate_diagonal_board)"
 
-generate_reverted_board
-generate_diagonal_board
-generate_anti_diagonal_board
+generate_win_board
+generate_reverted_win_board
+generate_diagonal_win_board
+generate_anti_diagonal_win_board
 #input=$(takePlayerInput "X")
 #make_move "X" "$input"
 #check_win

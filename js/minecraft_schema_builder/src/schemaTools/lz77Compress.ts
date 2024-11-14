@@ -36,8 +36,8 @@ export function lz77Compress(input: string | number[], windowSize = 20) {
     }
   }
 
-  if(output[output.length-1] === undefined) {
-    output.pop()
+  if (output[output.length - 1] === undefined) {
+    output.pop();
   }
 
   return output;

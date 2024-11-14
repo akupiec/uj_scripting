@@ -15,8 +15,8 @@ export function lz77Decompress(compressed: any[]) {
     }
   }
 
-  if(output[output.length -1] === undefined) {
-    output.pop()
+  if (output[output.length - 1] === undefined) {
+    output.pop();
   }
   return output;
 }

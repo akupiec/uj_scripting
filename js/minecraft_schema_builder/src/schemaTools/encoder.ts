@@ -2,7 +2,9 @@ import fs from "fs";
 import nbt from "nbt";
 import { lz77Compress } from "./lz77Compress";
 import { encodeBase1023 } from "./encodeBase1023";
-import {toBeadRockEdition} from "../minecraft.blocks.lut";
+import { toBeadRockEdition } from "../minecraft.blocks.lut";
+import Pbf from "pbf";
+import {utf8} from "cbor/types/lib/utils";
 
 export function parseSchema(shemaFilePath: string) {
   return new Promise((resolve, reject) => {
@@ -14,28 +16,33 @@ export function parseSchema(shemaFilePath: string) {
 
       let blockData;
       let palette;
+      let size;
+
       if (data.value.BlockData) {
-        blockData = data.value.BlockData.value.map((i) => (i < 0 ? 0 : i));
+        const b = new Pbf(data.value.BlockData.value);
+        size = [data.value.Height.value, data.value.Length.value, data.value.Width.value];
+        const len = size[0] * size[1] * size[2];
+        blockData = new Uint16Array(len);
+
+        for (let i = 0; i < len; i++) blockData[i] = b.readVarint64();
+        palette = toBeadRockEdition(data.value.Palette.value);
+        blockData = Array.from(blockData);
       } else {
-        blockData = data.value.Blocks.value;
-      }
-      if (data.value.Palette) {
-        palette = Object.fromEntries(
-          Object.entries(data.value.Palette.value).map(([k, v]) => {
-            return [k.replace("minecraft:", ""), v.value];
-          }),
-        );
+        throw new Error("unknown shema!");
       }
 
-      const compressed = lz77Compress(blockData, 1022);
-      const encoded = encodeBase1023(compressed);
+      // fs.writeFileSync('out.json', JSON.stringify(data.value.Palette.value, undefined, 2), 'utf-8');
+      // const compressed = lz77Compress(blockData, 1022);
+      // const encoded = encodeBase1023(compressed);
       const parsedData = {
-        size: [data.value.Height.value, data.value.Width.value, data.value.Length.value],
-        palette: palette && toBeadRockEdition(palette),
-        data: encoded,
+        size: size,
+        palette: palette,
+        data: blockData,
       };
 
       resolve(parsedData);
     });
   });
 }
+//data.value.BlockData.value[48 * size[2] * size[1] + 33 * size[2] + 32]
+//307946

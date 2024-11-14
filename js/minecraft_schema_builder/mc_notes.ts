@@ -11,3 +11,6 @@ for (let x = 0; x < 1000; x += 20) {
     }
   }
 }
+
+
+blocks.place(blocks.blockByName("Calcite"), pos(0,0,2))

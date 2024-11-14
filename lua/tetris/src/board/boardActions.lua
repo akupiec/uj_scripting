@@ -12,6 +12,9 @@ function BoardActions.new(state)
   self.updateNextShape = function()
     self.state:updateNextShape()
   end
+  self.pause = function()
+    self.state.mode = GameMode.Pause
+  end
   return self
 end
 

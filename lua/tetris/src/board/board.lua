@@ -5,12 +5,13 @@ Board.__index = Board
 function Board.new(state, actions)
   local self = setmetatable({}, Board)
   self.state = state
+  self.actions = actions
   local margin = 20
   self.tileArea = TileArea.new(state, actions)
 
   self.scoreBox = { x = margin, y = margin, width = 300, height = 60, label = "Score" }
   self.levelBox = { x = margin, y = 100, width = 300, height = 60, label = "Level" }
-  local tileBoxSize = { w = self.state.tileWidth * self.state.tileSize + 10, h = self.state.tileHeight * self.state.tileSize + 10}
+  local tileBoxSize = { w = self.state.tileWidth * self.state.tileSize + 10, h = self.state.tileHeight * self.state.tileSize + 10 }
   self.tilesBox = { x = state.window.w - tileBoxSize.w - margin, y = margin, width = tileBoxSize.w, height = tileBoxSize.h }
 
   return self
@@ -27,7 +28,11 @@ function Board:draw()
 end
 
 function Board:action(key)
-  self.tileArea:action(key)
+  if key == "escape" or key == 'p' then
+    self.actions.pause()
+  else
+    self.tileArea:action(key)
+  end
 end
 
 function Board:_drawTexts()

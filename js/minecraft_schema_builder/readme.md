@@ -7,6 +7,8 @@ Each of them have different exporting way, with different schema syntax, with di
 
 I’ve mapped over 200 block variants, including orientations and metadata, but many are still missing, and couple have some random substitutions, just to make example schemas look good
 
+[Runtime presentation movie](https://ujchmura-my.sharepoint.com/:v:/g/personal/artur_kupiec_student_uj_edu_pl/EfwwX-TVCGxLjqgerQM_KmcBokxTo7b6al7ck0JzWfXX1g?e=ntRQ7I&nav=eyJwbGF5YmFja09wdGlvbnMiOnt9LCJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbE1vZGUiOiJtaXMiLCJyZWZlcnJhbFZpZXciOiJwb3N0cm9sbC1jb3B5bGluayIsInJlZmVycmFsUGxheWJhY2tTZXNzaW9uSWQiOiI1NWY2M2NjYy00ZDU2LTRjYWQtYTljOC04NjQyODdlN2RhYTgifX0%3D)
+
 # Run Steps
 
 Command `bun index.ts` will generate two files `darkest-castle.out` & `Zollburg_Niederbr.out` both of them contains `minecraft_scripts` which will build castles based on `*.schem` files.

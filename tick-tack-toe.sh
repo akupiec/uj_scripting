@@ -1,10 +1,11 @@
 #!/bin/bash
 source setup_board.sh
+source check_win.sh
 
 boardArray=""
 
 BOARD_SIZE=4
-#WINING_LENGTH=3
+WINING_LENGTH=3
 EMPTY_CHAR='_'
 SAVE_FILE='autosave.txt'
 
@@ -52,67 +53,6 @@ draw_board() {
   done
 }
 
-generate_win_board() {
-  ret=(${to_print//|/})
-  echo $ret
-}
-
-generate_reverted_win_board() {
-  ret=""
-  for ((i = 0; i < $BOARD_SIZE; i++)); do
-    for ((j = 0; j < $BOARD_SIZE; j++)); do
-      idx=$(((i + (j * $BOARD_SIZE)) * 2))
-      ret+=${boardArray:idx:1}
-    done
-    ret+="."
-  done
-
-  echo $ret
-}
-
-generate_diagonal_win_board() {
-  ret=""
-  for ((i = 0; i < $BOARD_SIZE; i++)); do
-    x=$i
-    r0=""
-    r1=""
-    for ((j = 0; j < $BOARD_SIZE; j++)); do
-      idx0=$(((x + (j * $BOARD_SIZE)) * 2))
-      idx1=$(((j + (x * $BOARD_SIZE)) * 2))
-      r0=$r0${boardArray:idx0:1}
-      r1=$r1${boardArray:idx1:1}
-      ((x++))
-      if (($x == $BOARD_SIZE)); then
-        break
-      fi
-    done
-    ret+=$r0"."$r1"."
-  done
-  echo $ret
-}
-
-generate_anti_diagonal_win_board() {
-  ret=""
-  len=$((BOARD_SIZE - 1))
-  for ((i = $len; i >= 0; i--)); do
-    x=$i
-    r0=""
-    r1=""
-    for ((j = 0; j < $BOARD_SIZE; j++)); do
-      idx0=$(((x + (j * $BOARD_SIZE)) * 2))
-      idx1=$((($len - x + ((($len - j)) * $BOARD_SIZE)) * 2))
-      r0=$r0${boardArray:idx0:1}
-      r1=$r1${boardArray:idx1:1}
-      ((x--))
-      if (($x < 0)); then
-        break
-      fi
-    done
-    ret+=$r0"."$r1"."
-  done
-  echo $ret
-}
-
 assert() {
   if [[ $1 -ne 1 ]]; then
     echo "$2"
@@ -155,24 +95,7 @@ make_move() {
   boardArray="${boardArray:0:idx}$who${boardArray:idx+1}"
 }
 
-#return 0 for game in progress
-#return 1 for mage won by X
-#return 2 for game won by O
-#return 3 for game draw
-check_win() {
-  reverted=$(generate_reverted_board)
-  if [[ $boardArray != *"_"* ]]; then
-    return 3
-  fi
-  if [[ $boardArray =~ "X|X|X" || $reverted =~ "X|X|X" ]]; then
-    return 1
-  fi
-  if [[ $boardArray =~ "O|O|O" || $reverted =~ "O|O|O" ]]; then
-    return 2
-  fi
 
-  return 0
-}
 
 #welcome_info
 #wait_for_any_key
@@ -185,14 +108,9 @@ echo
 #draw_board "$(generate_reverted_board)"
 #draw_board "$(generate_diagonal_board)"
 
-generate_win_board
-generate_reverted_win_board
-generate_diagonal_win_board
-generate_anti_diagonal_win_board
 #input=$(takePlayerInput "X")
 #make_move "X" "$input"
+end=$(check_win)$?
+echo $end
 #check_win
-#end=$(check_win)$?
-#echo $end
-
 #draw_board

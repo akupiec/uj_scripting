@@ -1,6 +1,6 @@
 # Info
 
-Small typescript project that *generates* script to build structures in minecraft education edition based on provided schema.
+Small typescript project that _generates_ script to build structures in minecraft education edition based on provided schema.
 
 Idea was to build from any schema, but I found out in very painful way that are multiple versions of minecraft.
 Each of them have different exporting way, with different schema syntax, with different block id's.
@@ -12,9 +12,10 @@ I’ve mapped over 200 block variants, including orientations and metadata, but 
 Command `bun index.ts` will generate two files `darkest-castle.out` & `Zollburg_Niederbr.out` both of them contains `minecraft_scripts` which will build castles based on `*.schem` files.
 
 ## Requirements:
-  - [bun](https://bun.sh/)
-  - [pnpm](https://pnpm.io/)
-  - [Minecraft Education edition](https://education.minecraft.net/en-us/get-started/download)
+
+- [bun](https://bun.sh/)
+- [pnpm](https://pnpm.io/)
+- [Minecraft Education edition](https://education.minecraft.net/en-us/get-started/download)
 
 ## Run
 
@@ -26,7 +27,7 @@ Command `bun index.ts` will generate two files `darkest-castle.out` & `Zollburg_
 
 ## Bonus
 
-Due to my struggles with minecraft scripts I started TDD, so there are some tests ^_^
+Due to my struggles with minecraft scripts I started TDD, so there are some tests ^\_^
 
 command to run: `bun test` or `pnpm test`
 

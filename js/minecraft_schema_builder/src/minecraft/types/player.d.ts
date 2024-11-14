@@ -4,7 +4,7 @@ declare const player: {
 };
 
 declare enum FillOperation {
-  Replace = 0
+  Replace = 0,
 }
 
 declare const blocks: {

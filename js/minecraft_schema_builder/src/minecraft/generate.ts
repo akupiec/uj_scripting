@@ -10,10 +10,10 @@ function generateScript(parsedData: any) {
 
   let mc_script = "";
   mc_script += "let data :any = " + JSON.stringify(parsedData) + ";\n";
-  mc_script += base1023RAW.replaceAll("export ", "").replace(/^import .*/mg, '');
-  mc_script += lz77RAW.replaceAll("export ", "").replace(/^import .*/mg, '');
-  mc_script += idxToCordsRaw.replaceAll("export ", "").replace(/^import .*/mg, '');
-  mc_script += blocksRaw.replaceAll("export ", "").replace(/^import .*/mg, '');
+  mc_script += base1023RAW.replaceAll("export ", "").replace(/^import .*/gm, "");
+  mc_script += lz77RAW.replaceAll("export ", "").replace(/^import .*/gm, "");
+  mc_script += idxToCordsRaw.replaceAll("export ", "").replace(/^import .*/gm, "");
+  mc_script += blocksRaw.replaceAll("export ", "").replace(/^import .*/gm, "");
   mc_script += `
 
 player.say("Decoding data...");
@@ -45,4 +45,3 @@ player.say("Building !!!DONE!!!");
 
   console.log("generation finished!");
 })().then();
-

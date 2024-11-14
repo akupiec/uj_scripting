@@ -1,1 +1,1 @@
-import "./src/minecraft/generate.ts"
+import "./src/minecraft/generate.ts";

@@ -34,10 +34,23 @@ test("palette zollburg conversion", async () => {
 });
 
 test("pallete dark castle", async () => {
-  const examplePallete = await getRawPalette("schemas/darkest-castle.schem");
-  const p = Object.values(parsePalette(examplePallete)) as string[];
+  function match(parsedPalette, raw, out) {
+    const id = rawPalette[raw].value;
+    expect(parsedPalette[id]).toEqual(out);
+  }
+
+  const rawPalette = await getRawPalette("schemas/darkest-castle.schem");
+  const parsedPalette = parsePalette(rawPalette);
+  const p = Object.values(parsedPalette) as string[];
   expect(!!p.find((pp) => pp.startsWith("nether_brick_slab"))).toBe(true);
   expect(!!p.find((pp) => pp.startsWith("stone_brick_slab"))).toBe(true);
+  expect(!!p.find((pp) => pp.startsWith("blackstone_wall"))).toBe(true);
+  expect(!!p.find((pp) => pp.startsWith("polished_blackstone_wall"))).toBe(true);
+  match(
+    parsedPalette,
+    "minecraft:polished_blackstone_slab[type=double,waterlogged=false]",
+    "polished_blackstone_bricks",
+  );
 });
 
 test("palette conversion sanity check", async () => {
@@ -66,5 +79,6 @@ test("palette conversion sanity check", async () => {
   const examplePallete = await getRawPalette("schemas/Zollburg_Niederbr.schem");
   check(parsePalette(examplePallete));
   const examplePallete2 = await getRawPalette("schemas/darkest-castle.schem");
+  fs.writeFileSync("temp.json", JSON.stringify(examplePallete2, undefined, 2));
   check(parsePalette(examplePallete2));
 });

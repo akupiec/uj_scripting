@@ -1,4 +1,5 @@
 function wall(k) {
+  if (k.includes("blackstone_wall")) return trimMeta(k);
   const trueName = k.replace(/_wall.*/, "");
   return `cobblestone_wall["wall_block_type":"${trueName}"]`;
 }
@@ -61,6 +62,7 @@ function removeSingleMeta(k, meta: string) {
 }
 
 function slab(k: string) {
+  if (/polished_blackstone_slab.*type=double/.test(k)) return k.replace(/_slab.*/, "_bricks");
   if (k.includes("type=double")) {
     return "dark_oak_planks";
   }

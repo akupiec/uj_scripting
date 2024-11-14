@@ -1,5 +1,5 @@
 import "./types/player";
-import {indexToCords} from "../utils/indexToCords";
+import { indexToCords } from "../utils/indexToCords";
 
 export function cleanSpace(sPos: Position, size: number[], showProgress: boolean) {
   for (let i = 0; i < size[0]; i += 20) {
@@ -7,7 +7,7 @@ export function cleanSpace(sPos: Position, size: number[], showProgress: boolean
       for (let k = -5; k < size[2] + 10; k += 20) {
         const p0 = sPos.add(pos(k, i, j));
         const p1 = p0.add(pos(19, 19, 19));
-        if(showProgress) player.say("clear: " + p0);
+        if (showProgress) player.say("clear: " + p0);
         blocks.fill(0, p0, p1, FillOperation.Replace);
       }
     }
@@ -25,7 +25,7 @@ function buildAll(sPos: Position, start: number, end: number, size: number[], sh
   const startI = start * size[1] * size[2];
   const endI = end * size[1] * size[2];
   for (let n = startI; n < endI; n++) {
-    if(showProgress && n % 250 == 0) player.say("place block " + n + " of " + blockData.length);
+    if (showProgress && n % 250 == 0) player.say("place block " + n + " of " + blockData.length);
     const [i, j, k] = indexToCords(n, size);
     const b = blockRef(n);
     if (b == "air") continue;

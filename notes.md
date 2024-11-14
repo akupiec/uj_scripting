@@ -17,5 +17,12 @@ do
 done
 ```
 
+for loop
+```shell
+for ((i = 0 ; i <= 1000 ; i++)); do
+  echo "Counter: $i"
+done
+```
+
 split array by char (\n)
 ```rows=(${boardArray//\n/ })```

@@ -51,32 +51,47 @@ draw_board() {
   done
 }
 
+generate_reverted_board() {
+  reverted=""
+  rows=(${boardArray//./ })
+  for ((i = 0; i < $BOARD_SIZE; i++)); do
+    for ((j = 0; j < $BOARD_SIZE; j++)); do
+      idx=$(((i + (j * $BOARD_SIZE)) * 2))
+      reverted+=${boardArray:idx:1}
+      [[ $j < $((BOARD_SIZE - 1)) ]] && reverted+="|"
+    done
+    [[ $i < $((BOARD_SIZE - 1)) ]] && reverted+="."
+  done
+
+  echo $reverted
+}
+
 assert() {
   if [[ $1 -ne 1 ]]; then
-    echo "$2" # Print the error message
-    exit 1    # Exit with a non-zero status to indicate an error
+    echo "$2"
+    exit 1
   fi
 }
 
 validate_cords() {
   where=$1 #cords in XX format
+  assert "((${#where} == 2))" "invalid cords!"
 
   x=$(hex_to_num ${where:0:1})
   y=$(hex_to_num ${where:1:1})
+  assert "(($x < $BOARD_SIZE && $y < $BOARD_SIZE))" "cords out of bonds!"
 
+  idx=$(((y + (x * $BOARD_SIZE)) * 2))
+  at_index=${boardArray:idx:1}
+  assert "$([[ $at_index == $EMPTY_CHAR ]] && echo 1)" "Invalid move!"
+  return 0
 }
 
-#TODO make me repeat prompt on error instead crash program!
-#TODO check prompt to be upper case!
 takePlayerInput() {
   who=$1 #X or O
   assert "$([[ $who == 'X' || $who == 'O' ]] && echo 1)" "Invalid player!"
 
   read -p "Enter move for player $who: " where
-  assert "((${#where} == 2))" "invalid cords!"
-  x=$(hex_to_num ${where:0:1})
-  y=$(hex_to_num ${where:1:1})
-  assert "(($x < $BOARD_SIZE && $y < $BOARD_SIZE))" "cords out of bonds!"
   echo $where
 }
 
@@ -85,17 +100,31 @@ make_move() {
   where=$2 #cords in XX format
 
   assert "$([[ $who == 'X' || $who == 'O' ]] && echo 1)" "Invalid player!"
-  assert "((${#where} == 2))" "invalid cords!"
+  validate_cords "$where"
 
   x=$(hex_to_num ${where:0:1})
   y=$(hex_to_num ${where:1:1})
-  assert "(($x < $BOARD_SIZE && $y < $BOARD_SIZE))" "cords out of bonds!"
-
-  idx=$(((x + (y * $BOARD_SIZE)) * 2))
-  at_index=${boardArray:idx:1}
-  assert "$([[ $at_index == $EMPTY_CHAR ]] && echo 1)" "Invalid move!"
-
+  idx=$(((y + (x * $BOARD_SIZE)) * 2))
   boardArray="${boardArray:0:idx}$who${boardArray:idx+1}"
+}
+
+#return 0 for game in progress
+#return 1 for mage won by X
+#return 2 for game won by O
+#return 3 for game draw
+check_win() {
+  reverted=$(generate_reverted_board)
+  if [[ $boardArray != *"_"* ]]; then
+    return 3
+  fi
+  if [[ $boardArray =~ "X|X|X" || $reverted =~ "X|X|X" ]]; then
+    return 1
+  fi
+  if [[ $boardArray =~ "O|O|O" || $reverted =~ "O|O|O" ]]; then
+    return 2
+  fi
+
+  return 0
 }
 
 #welcome_info
@@ -103,8 +132,11 @@ make_move() {
 read_board
 save_board
 clear_console
-draw_board
-input=$(takePlayerInput "X")
-make_move "X" "$input"
-save_board
-draw_board
+#draw_board
+#input=$(takePlayerInput "X")
+#make_move "X" "$input"
+check_win
+end=$(check_win)$?
+echo $end
+
+#draw_board

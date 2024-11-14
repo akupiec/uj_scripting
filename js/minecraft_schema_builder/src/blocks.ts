@@ -14,6 +14,7 @@ export function cleanSpace(sPos: Position, size: number[]) {
 function blockRef(idx: number) {
   if (!data.palette) return -1;
   const b: string = data.palette[blockData[idx]];
+  if (!b) return -2;
   if (b.includes("[")) return -1;
   return blocks.blockByName(data.palette[blockData[idx]]);
 }
@@ -27,6 +28,10 @@ function buildAll(sPos: Position, start: number, end: number, size: number[]) {
         if (n % 250 == 0) player.say("place block " + n + " of " + blockData.length);
 
         const b = blockRef(n);
+        if (b == -2) {
+          player.say(`BROKEN ${n} ${blockData[n]}`)
+          return;
+        }
         if (b == AIR) continue;
 
         const p = sPos.add(pos(k, i, j));

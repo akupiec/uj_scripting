@@ -6,10 +6,9 @@ for (let i = 0; charTable.length < 1024; i++) {
   }
 }
 
-export function decodeBase1023(encoded: string): number[] {
-  let out = [];
+export function decodeBase1023(encoded: any[]): number[] {
   for (let i = 0; i < encoded.length; i++) {
-    out.push(charTable.indexOf(encoded[i]));
+    encoded[i] = charTable.indexOf(encoded[i]);
   }
-  return out;
+  return encoded;
 }

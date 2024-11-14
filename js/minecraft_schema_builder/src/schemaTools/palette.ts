@@ -125,9 +125,9 @@ function stairs(k) {
   return removeSingleMeta(removeSingleMeta(k2, "shape"), "waterlogged",);
 }
 
-export function toBeadRockEdition(plette: object) {
+export function parsePalette(schemaPalette: object) {
   return Object.fromEntries(
-    Object.entries(plette).map(([k, v]) => {
+    Object.entries(schemaPalette).map(([k, v]) => {
       k = k.replace("minecraft:", "");
       v = v.value;
       k = k.replace("polished_deepslate", "polished_andesite");

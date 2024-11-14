@@ -64,8 +64,9 @@ function slab(k: string) {
   if (k.includes("type=double")) {
     return "dark_oak_planks";
   }
-  k = removeSingleMeta(metaMatchToStr(k, "type", "minecraft:vertical_half"), "waterlogged");
-  return k.replace(/[\w_]+\[/, "oak_slab[");
+
+  k = k.replace('red_nether_brick_slab', 'nether_brick_slab');
+  return removeSingleMeta(metaMatchToStr(k, "type", "minecraft:vertical_half"), "waterlogged")
 }
 
 const endRod = (k: string) =>
@@ -136,15 +137,19 @@ function missingBlockReplacer(k: string): string {
     return `air`;
 
   if (k == 'bricks') return 'brick_block';
+  if (k == 'nether_bricks') return 'nether_brick';
+  if (k == "stone_bricks" || k == "mossy_stone_bricks") return `stonebrick`;
+  if (k == 'red_nether_bricks') return 'red_nether_brick';
+  if (k.includes('cobblestone_stairs')) return k.replace('cobblestone_stairs', 'stone_stairs')
   if (k.includes("smooth_sandstone")) return `sandstone["sand_stone_type":"smooth"]`;
   if (k.includes("chiseled_sandstone")) return `sandstone["sand_stone_type":"heiroglyphs"]`;
   if (k.includes("dripstone_block")) return `coal_block`;
   if (k.includes("_fence")) return `nether_brick_fence`;
+  if (k.includes("dandelion")) return `yellow_flower`;
   if (k.includes("candle")) return `torch`;
   if (k.includes("calcite")) return `white_wool`;
   if (k.includes("rooted_dirt") || k.includes('coarse_dirt') || k.includes("dirt_path")) return `dirt`;
   if (k.includes("tuff")) return `cobblestone`;
-  if (k.includes("stone_bricks")) return `stonebrick`;
   if (k.includes("stripped_mangrove_wood")) return `cobblestone`;
 
   return k

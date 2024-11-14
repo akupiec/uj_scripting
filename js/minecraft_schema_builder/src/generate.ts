@@ -1,11 +1,8 @@
 import fs from "fs";
 import { parseSchema } from "./schemaTools/parser";
 
-// const out = await parseSchema('./darkest-castle.schem');
-// const out = await parseSchema("./medievalgate.schem");
-// const out = await parseSchema("./hmls.schem");
-const out = await parseSchema("./Zollburg_Niederbr.schem");
-// fs.writeFileSync("./Zollburg_Niederbr.palette.json", JSON.stringify(out));
+const out = await parseSchema('schemas/darkest-castle.schem');
+// const out = await parseSchema("schemas/Zollburg_Niederbr.schem");
 
 const base1023RAW = fs.readFileSync("./src/schemaTools/decodeBase1023.ts", "utf-8");
 const lz77RAW = fs.readFileSync("./src/schemaTools/lz77Decompress.ts", "utf-8");
@@ -21,8 +18,6 @@ mc_script += blocksRaw.replaceAll("export ", "");
 mc_script += `
 
 player.say("Decoding data...");
-// const blockData: any[] = data.data;
-// data.data = decodeBase1023(data.data);
 const blockData: any[] = lz77Decompress(decodeBase1023(data.data));
 delete data.data;
 player.say("Data ready! Building :D")
@@ -31,9 +26,10 @@ const size: number[] = data.size;
 const sPos = pos(0, 0, 0).toWorld();
 
 cleanSpace(sPos, size);
-buildAll(sPos, 39, 41, size);
-//buildPalette(sPos, data.palette, 80);
-//player.say(blockData[159100])
+const sPos2 = sPos.add(pos(0, 0, 2));
+buildAll(sPos2, 20, 40, size);
+//buildPalette(sPos2, data.palette, 80);
+player.say("Building !!!DONE!!!");
 `;
 
 fs.writeFileSync("./mc_script.out", mc_script);

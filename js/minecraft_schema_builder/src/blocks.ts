@@ -51,15 +51,7 @@ function buildPalette(sPos: Position, palette: any, maxLen: number) {
       x++;
     }
     const p = sPos.add(pos(x, 0, z++));
-    if (pp.indexOf("[") === -1) {
-      const b = blocks.blockByName(pp);
-      if (pp != "Air" && b == 0) {
-        player.say(pp);
-      }
-      blocks.place(b, p);
-    } else {
-      player.say(`setblock ${p.getValue(0)} ~${p.getValue(1)} ~${p.getValue(2)} ${pp}`);
-      player.execute(`setblock ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${pp}`);
-    }
+    player.say(`setblock ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${pp} ${i}`);
+    player.execute(`setblock ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${pp}`);
   });
 }

@@ -1,25 +1,44 @@
-local Menu, MenuMode = unpack(require("menu/menu"))
+local Menu = unpack(require("menu/menu"))
+local MenuActions = require("menu/menuActions")
+local Board = require("board/board")
+local State = require("state")
+local GameMode = require("gameMode")
 
-function exitGame()
-  love.event.quit()
-end
+local state
 
 function love.load()
-  love.window.setMode(800, 600, { resizable = false, vsync = 1 })
-  menu = Menu.new(800, exitGame)
+  state = State.new()
 
-  --menu:setMode(MenuMode.Pause)
+  love.window.setMode(state.window.w, state.window.h, { resizable = false, vsync = state.window.vsync })
+  love.window.setTitle(state.name)
+
+  local menuActions = MenuActions.new(state)
+  menu = Menu.new(state, menuActions)
+  board = Board.new()
+
   io.stdout:setvbuf("no")
 end
 
 function love.update(dt)
-  menu:update(dt)
+  if state.mode == GameMode.Running then
+    board:update(dt)
+  elseif state.mode == GameMode.Menu or state.mode == GameMode.Pause then
+    menu:update(dt)
+  end
 end
 
 function love.draw()
-  menu:draw()
+  if state.mode == GameMode.Running then
+    board:draw()
+  elseif state.mode == GameMode.Menu or state.mode == GameMode.Pause then
+    menu:draw()
+  end
 end
 
 function love.keypressed(key)
-  menu:action(key)
+  if state.mode == GameMode.Running then
+    board:action(key)
+  elseif state.mode == GameMode.Menu or state.mode == GameMode.Pause then
+    menu:action(key)
+  end
 end

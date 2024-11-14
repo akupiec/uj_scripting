@@ -11,10 +11,10 @@ local shapes = {
   {{0,1,0},{1,1,1}},  -- T
 }
 
-function Shape.new()
+function Shape.new(dX)
   local self = setmetatable({}, Shape)
   self.matrix = shapes[math.random(#shapes)]
-  self.x = 0
+  self.x = dX - math.floor(#self.matrix[1] / 2)
   self.y = 0
   return self
 end
@@ -32,17 +32,6 @@ function Shape:rotate(reverse)
     end
   end
   self.matrix = new_matrix
-end
-
-function Shape:draw(tile_size)
-  love.graphics.setColor(0, 0.5, 1)
-  for y, row in ipairs(self.matrix) do
-    for x, cell in ipairs(row) do
-      if cell ~= 0 then
-        love.graphics.rectangle("fill", (self.x + x - 2) * tile_size, (self.y + y - 1) * tile_size, tile_size, tile_size)
-      end
-    end
-  end
 end
 
 return Shape

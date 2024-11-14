@@ -1,5 +1,5 @@
 export function lz77Decompress(compressed: any[]) {
-  let output: number[] = [];
+  let output: any[] = [];
 
   for (let i = 0; i < compressed.length; i += 3) {
     const [distance, length, nextChar] = [compressed[i], compressed[i + 1], compressed[i + 2]];

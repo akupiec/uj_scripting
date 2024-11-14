@@ -1,11 +1,14 @@
-export function cleanSpace(sPos: Position, size: number[]) {
+import "./types/player";
+import {indexToCords} from "../utils/indexToCords";
+
+export function cleanSpace(sPos: Position, size: number[], showProgress: boolean) {
   for (let i = 0; i < size[0]; i += 20) {
     for (let j = -5; j < size[1] + 10; j += 20) {
       for (let k = -5; k < size[2] + 10; k += 20) {
         const p0 = sPos.add(pos(k, i, j));
         const p1 = p0.add(pos(19, 19, 19));
-        player.say("clear: " + p0);
-        blocks.fill(AIR, p0, p1, FillOperation.Replace);
+        if(showProgress) player.say("clear: " + p0);
+        blocks.fill(0, p0, p1, FillOperation.Replace);
       }
     }
   }
@@ -13,27 +16,30 @@ export function cleanSpace(sPos: Position, size: number[]) {
 
 function blockRef(idx: number) {
   const b: string = data.palette[blockData[idx]];
-  if (!b) return 'air';
+  if (!b) return "air";
   return b;
 }
 
-function buildAll(sPos: Position, start: number, end: number, size: number[]) {
+function buildAll(sPos: Position, start: number, end: number, size: number[], showProgress: boolean) {
   let multiblock = 0;
   const startI = start * size[1] * size[2];
   const endI = end * size[1] * size[2];
   for (let n = startI; n < endI; n++) {
-    if (n % 250 == 0) player.say("place block " + n + " of " + blockData.length);
-
+    if(showProgress && n % 250 == 0) player.say("place block " + n + " of " + blockData.length);
     const [i, j, k] = indexToCords(n, size);
     const b = blockRef(n);
-    if (b == 'air') continue;
+    if (b == "air") continue;
 
     const p = sPos.add(pos(k, i, j));
     if (k < size[2] - 1 && blockData[n + 1] === blockData[n]) {
       multiblock++;
     } else if (multiblock != 0) {
       const p0 = p.add(pos(-multiblock, 0, 0));
-      player.execute(`fill ${p0.getValue(0)} ${p0.getValue(1)} ${p0.getValue(2)} ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${b}`);
+      player.execute(
+        `fill ${p0.getValue(0)} ${p0.getValue(1)} ${p0.getValue(2)} ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(
+          2,
+        )} ${b}`,
+      );
       multiblock = 0;
     } else {
       player.execute(`setblock ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${b}`);

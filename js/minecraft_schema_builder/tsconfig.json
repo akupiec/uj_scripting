@@ -2,4 +2,11 @@
   "compilerOptions": {
     "lib": ["ESNext"],
   },
+  "include": [
+    "./src/**/*.ts",
+  ],
+  "exclude": [
+    "./node_modules/**/*.*",
+    "mc_notes.ts"
+  ]
 }

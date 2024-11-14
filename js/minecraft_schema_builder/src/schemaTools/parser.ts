@@ -1,4 +1,4 @@
-import fs from "fs";
+import * as fs from "fs";
 import nbt from "nbt";
 import { lz77Compress } from "./lz77Compress";
 import { encodeBase1023 } from "./encodeBase1023";

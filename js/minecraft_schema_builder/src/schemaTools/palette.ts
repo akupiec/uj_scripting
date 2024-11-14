@@ -1,11 +1,11 @@
 function wall(k) {
   const trueName = k.replace(/_wall.*/, "");
-  return `cobblestone_wall["wall_block_type":"${trueName}"]`
+  return `cobblestone_wall["wall_block_type":"${trueName}"]`;
 }
 
 function torch(k) {
   const face = k.replace(/.*\[facing=(.*)\]/, "$1");
-  return `torch["torch_facing_direction":"${face}"]`
+  return `torch["torch_facing_direction":"${face}"]`;
 }
 
 function trimMeta(k) {
@@ -20,7 +20,7 @@ function metaConverter(
   k: string,
   meta = "facing",
   str = "facing",
-  map: object = {east: 0, west: 1, south: 2, north: 3},
+  map: object = { east: 0, west: 1, south: 2, north: 3 },
 ) {
   const matcher = new RegExp(`${meta}=(\\w+)`);
   const match = k.match(matcher)[1];
@@ -65,8 +65,8 @@ function slab(k: string) {
     return "dark_oak_planks";
   }
 
-  k = k.replace('red_nether_brick_slab', 'nether_brick_slab');
-  return removeSingleMeta(metaMatchToStr(k, "type", "minecraft:vertical_half"), "waterlogged")
+  k = k.replace("red_nether_brick_slab", "nether_brick_slab");
+  return removeSingleMeta(metaMatchToStr(k, "type", "minecraft:vertical_half"), "waterlogged");
 }
 
 const endRod = (k: string) =>
@@ -86,20 +86,20 @@ const bed = (k: string) => {
     north: 2,
     east: 3,
   });
-  return partMeta(metaMatchToNr(k, "occupied", "occupied_bit"))
-}
+  return partMeta(metaMatchToNr(k, "occupied", "occupied_bit"));
+};
 
 function trapDoor(k: string) {
-  k = k.replace(/^oak_trapdoor/, 'trapdoor')
+  k = k.replace(/^oak_trapdoor/, "trapdoor");
   const k1 = metaConverter(k, "facing", "direction", {
     west: 1,
     east: 0,
     north: 3,
     south: 2,
-  })
-  const k2 = metaConverter(k1, "half", "upside_down_bit", {top: true, bottom: false});
+  });
+  const k2 = metaConverter(k1, "half", "upside_down_bit", { top: true, bottom: false });
   const k3 = metaMatchToNr(k2, "open", "open_bit");
-  return removeSingleMeta(removeSingleMeta(k3, "waterlogged",), "powered",);
+  return removeSingleMeta(removeSingleMeta(k3, "waterlogged"), "powered");
 }
 
 function door(k: string) {
@@ -110,8 +110,8 @@ function door(k: string) {
     south: 1,
     west: 2,
     north: 3,
-  })
-  return removeSingleMeta(metaMatchToNr(hingeMeta(halfMeta_broken(k1)), "open", "open_bit"), "powered",);
+  });
+  return removeSingleMeta(metaMatchToNr(hingeMeta(halfMeta_broken(k1)), "open", "open_bit"), "powered");
 }
 
 function stairs(k) {
@@ -120,9 +120,9 @@ function stairs(k) {
     west: 1,
     south: 2,
     north: 3,
-  })
-  const k2 = metaConverter(k1, "half", "upside_down_bit", {bottom: false, top: true});
-  return removeSingleMeta(removeSingleMeta(k2, "shape"), "waterlogged",);
+  });
+  const k2 = metaConverter(k1, "half", "upside_down_bit", { bottom: false, top: true });
+  return removeSingleMeta(removeSingleMeta(k2, "shape"), "waterlogged");
 }
 
 function missingBlockReplacer(k: string): string {
@@ -136,11 +136,11 @@ function missingBlockReplacer(k: string): string {
   )
     return `air`;
 
-  if (k == 'bricks') return 'brick_block';
-  if (k == 'nether_bricks') return 'nether_brick';
+  if (k == "bricks") return "brick_block";
+  if (k == "nether_bricks") return "nether_brick";
   if (k == "stone_bricks" || k == "mossy_stone_bricks") return `stonebrick`;
-  if (k == 'red_nether_bricks') return 'red_nether_brick';
-  if (k.includes('cobblestone_stairs')) return k.replace('cobblestone_stairs', 'stone_stairs')
+  if (k == "red_nether_bricks") return "red_nether_brick";
+  if (k.includes("cobblestone_stairs")) return k.replace("cobblestone_stairs", "stone_stairs");
   if (k.includes("smooth_sandstone")) return `sandstone["sand_stone_type":"smooth"]`;
   if (k.includes("chiseled_sandstone")) return `sandstone["sand_stone_type":"heiroglyphs"]`;
   if (k.includes("dripstone_block")) return `coal_block`;
@@ -148,11 +148,11 @@ function missingBlockReplacer(k: string): string {
   if (k.includes("dandelion")) return `yellow_flower`;
   if (k.includes("candle")) return `torch`;
   if (k.includes("calcite")) return `white_wool`;
-  if (k.includes("rooted_dirt") || k.includes('coarse_dirt') || k.includes("dirt_path")) return `dirt`;
+  if (k.includes("rooted_dirt") || k.includes("coarse_dirt") || k.includes("dirt_path")) return `dirt`;
   if (k.includes("tuff")) return `cobblestone`;
   if (k.includes("stripped_mangrove_wood")) return `cobblestone`;
 
-  return k
+  return k;
 }
 
 export function parsePalette(schemaPalette: object) {
@@ -169,7 +169,7 @@ export function parsePalette(schemaPalette: object) {
       if (k.includes("hay_block[") || k.includes("_wood[axis")) return [v, axis(k)];
       if (k.includes("_bed[")) return [v, bed(k)];
       if (k.includes("trapdoor[")) return [v, trapDoor(k)];
-      if (k.includes("door[")) return [v, door(k),];
+      if (k.includes("door[")) return [v, door(k)];
       if (k.includes("stairs[")) return [v, stairs(k)];
       if (k.includes("_slab[")) return [v, slab(k)];
 

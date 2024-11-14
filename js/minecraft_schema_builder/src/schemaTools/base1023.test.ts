@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { encodeBase1023 } from "./encodeBase1023";
-import {charTable, decodeBase1023} from "./decodeBase1023";
+import { charTable, decodeBase1023 } from "./decodeBase1023";
 
 test("encode base1023 charset", () => {
   expect(charTable.length).toBe(1024);

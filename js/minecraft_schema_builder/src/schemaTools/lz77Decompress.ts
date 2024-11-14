@@ -7,12 +7,10 @@ export function lz77Decompress(compressed: any[]) {
       output.push(nextChar);
     } else {
       const start = output.length - distance;
-      let matchedSubstring = [];
 
       for (let j = 0; j < length; j++) {
-        matchedSubstring.push(output[start + (j % distance)]);
+        output.push(output[start + (j % distance)]);
       }
-      output = output.concat(matchedSubstring)
       output.push(nextChar);
     }
   }

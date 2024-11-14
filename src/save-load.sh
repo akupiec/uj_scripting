@@ -16,7 +16,9 @@ read_board() {
     BOARD_SIZE=(${BOARD_SIZE//BOARD_SIZE=/})
     WINING_LENGTH=$(sed -n '2p' "$SAVE_FILE")
     WINING_LENGTH=(${WINING_LENGTH//WINING_LENGTH=/})
-    boardArray=$(sed '1,2d' "$SAVE_FILE" | tr '\n' '.')
+    PC_MODE=$(sed -n '3p' "$SAVE_FILE")
+    PC_MODE=(${PC_MODE//PC_MODE=/})
+    boardArray=$(sed '1,3d' "$SAVE_FILE" | tr '\n' '.')
     echo 'Loaded last game'
   else
     clear_board
@@ -27,6 +29,7 @@ save_board() {
   raw=(${boardArray//./\\n})
   echo "BOARD_SIZE=$BOARD_SIZE" > $SAVE_FILE
   echo "WINING_LENGTH=$WINING_LENGTH" >> $SAVE_FILE
+  echo "PC_MODE=$PC_MODE" >> $SAVE_FILE
   echo -en $raw >> $SAVE_FILE
 }
 

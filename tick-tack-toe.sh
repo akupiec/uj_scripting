@@ -8,6 +8,7 @@ source src/hex.sh
 boardArray=""
 
 BOARD_SIZE=3
+PC_MODE=1
 WINING_LENGTH=3
 EMPTY_CHAR='_'
 SAVE_FILE='autosave.txt'
@@ -19,9 +20,28 @@ make_move() {
   assert "$([[ $who == 'X' || $who == 'O' ]] && echo 1)" "Invalid player!"
   validate_cords "$where"
 
-  x=$(hex_to_num ${where:0:1})
-  y=$(hex_to_num ${where:1:1})
-  idx=$(((y + (x * $BOARD_SIZE)) * 2))
+  local x=$(hex_to_num ${where:0:1})
+  local y=$(hex_to_num ${where:1:1})
+  local idx=$(((y + (x * $BOARD_SIZE)) * 2))
+  boardArray="${boardArray:0:idx}$who${boardArray:idx+1}"
+}
+
+pc_move() {
+  local who=$1 #X or O
+  assert "$([[ $who == 'X' || $who == 'O' ]] && echo 1)" "Invalid player!"
+
+  local bord_len=${#boardArray}
+  possible_moves=()
+  for ((i = 0; i < $bord_len; i++)); do
+    local char=${boardArray:i:1}
+    if [[ $char == $EMPTY_CHAR ]]; then
+      possible_moves+=("$i")
+    fi
+  done
+
+  local len=${#possible_moves[@]}
+  local rand_idx=$((RANDOM % len))
+  local idx=${possible_moves[rand_idx]}
   boardArray="${boardArray:0:idx}$who${boardArray:idx+1}"
 }
 
@@ -48,14 +68,19 @@ main() {
       show_win "$end"
       break
     fi
-    input=$(player_input "$next_move")
-    if (($? != 0)); then
-      echo $input
-      draw_board
-      continue;
+
+    if [[ $PC_MODE -eq 1 && $next_move == "X" ]]; then
+      pc_move "$next_move"
+    else
+      input=$(player_input "$next_move")
+      if (($? != 0)); then
+        echo $input
+        draw_board
+        continue
+      fi
+      make_move "$next_move" "$input"
     fi
 
-    make_move "$next_move" "$input"
     save_board
     draw_board
     if [[ $next_move = "X" ]]; then

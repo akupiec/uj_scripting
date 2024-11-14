@@ -1,10 +1,13 @@
 welcome_info() {
   cat <<EOF
 -----------------------------------------
-               TIC-TAC-TOE
+             TIC-TAC-TOE
 
 Game support auto-saving functionality
-There is option to continue old game if found
+There is option to continue upon restart
+
+AI player is dumb as a brick :[
+at least for first iteration ];)
 
 -----------------------------------------
 
@@ -20,6 +23,9 @@ show_win() {
 -----------------------------------------
 
                  GAME END
+              thx for playing!
+              by Artur Kupiec
+
 
 EOF
 
@@ -80,6 +86,22 @@ new_board() {
     return 0
   fi
   echo "New win condition size: $WINING_LENGTH"
+
+  read -p "Do you want to play with PC [Yn]: " resp
+  resp=${resp:-'Y'}
+  resp=$(echo "$resp" | tr '[:lower:]' '[:upper:]')
+  if [[ $resp == 'Y' ]]; then
+    PC_MODE=1
+    echo "Playing with computer"
+  elif [[ $resp == 'N' ]]; then
+    PC_MODE=0
+    echo "Playing with other player"
+  else
+    echo "Invalid param" $resp
+    new_board
+    return 0
+  fi
+
   echo "-----------------------------"
   echo
 

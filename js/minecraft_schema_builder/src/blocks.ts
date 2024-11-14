@@ -19,26 +19,24 @@ function blockRef(idx: number) {
 
 function buildAll(sPos: Position, start: number, end: number, size: number[]) {
   let multiblock = 0;
-  for (let i = start; i < end; i++) {
-    for (let j = 0; j < size[1]; j++) {
-      for (let k = 0; k < size[2]; k++) {
-        const n = i * size[2] * size[1] + j * size[2] + k;
-        if (n % 250 == 0) player.say("place block " + n + " of " + blockData.length);
+  const startI = start * size[1] * size[2];
+  const endI = end * size[1] * size[2];
+  for (let n = startI; n < endI; n++) {
+    if (n % 250 == 0) player.say("place block " + n + " of " + blockData.length);
 
-        const b = blockRef(n);
-        if (b == 'air') continue;
+    const [i, j, k] = indexToCords(n, size);
+    const b = blockRef(n);
+    if (b == 'air') continue;
 
-        const p = sPos.add(pos(k, i, j));
-        if (k < size[2] - 1 && blockData[n + 1] === blockData[n]) {
-          multiblock++;
-        } else if (multiblock != 0) {
-          const p0 = p.add(pos(-multiblock, 0, 0));
-          player.execute(`fill ${p0.getValue(0)} ${p0.getValue(1)} ${p0.getValue(2)} ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${b}`);
-          multiblock = 0;
-        } else {
-          player.execute(`setblock ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${b}`);
-        }
-      }
+    const p = sPos.add(pos(k, i, j));
+    if (k < size[2] - 1 && blockData[n + 1] === blockData[n]) {
+      multiblock++;
+    } else if (multiblock != 0) {
+      const p0 = p.add(pos(-multiblock, 0, 0));
+      player.execute(`fill ${p0.getValue(0)} ${p0.getValue(1)} ${p0.getValue(2)} ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${b}`);
+      multiblock = 0;
+    } else {
+      player.execute(`setblock ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${b}`);
     }
   }
 }

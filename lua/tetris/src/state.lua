@@ -1,3 +1,4 @@
+local Grid = require('grid')
 local GameMode = require('gameMode')
 local Shape = require("board/shape")
 
@@ -24,14 +25,9 @@ function State:startNewGame()
   self.mode = GameMode.Running
   self.score = 0
   self.lvl = 1
+  self.totalLinesCleared = 0;
 
-  self.grid = {}
-  for y = 1, State.tileHeight do
-    self.grid[y] = {}
-    for x = 1, State.tileWidth do
-      self.grid[y][x] = 0
-    end
-  end
+  self.grid = Grid.init(self.tileWidth, self.tileHeight)
   self.currentShape = Shape.new(State.tileWidth / 2)
   self.nextShape = Shape.new(State.tileWidth / 2)
 end
@@ -39,6 +35,13 @@ end
 function State:updateNextShape()
   self.currentShape = self.nextShape
   self.nextShape = Shape.new(State.tileWidth / 2)
+end
+
+function State:linesClear(numberOfLines)
+  local multiplier = numberOfLines > 1 and numberOfLines * 0.1 + 1 or 1
+  self.score = self.score + self.lvl * 10 * multiplier
+  self.totalLinesCleared = self.totalLinesCleared + numberOfLines
+  self.lvl = math.floor(self.totalLinesCleared / 10) + 1
 end
 
 return State

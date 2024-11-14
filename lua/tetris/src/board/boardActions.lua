@@ -15,6 +15,9 @@ function BoardActions.new(state)
   self.pause = function()
     self.state.mode = GameMode.Pause
   end
+  self.linesClear = function(numberOfLines)
+    self.state:linesClear(numberOfLines)
+  end
   return self
 end
 

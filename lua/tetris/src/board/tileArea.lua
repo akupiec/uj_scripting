@@ -1,3 +1,5 @@
+local Grid = require('grid')
+
 local TileArea = {}
 TileArea.__index = TileArea
 
@@ -38,21 +40,20 @@ function TileArea:placeShape(shape)
 end
 
 function TileArea:clearLines()
+  local linesClear = 0
+
   for y = self.state.tileHeight, 1, -1 do
-    local full_line = true
-    for x = 1, self.state.tileWidth do
-      if self.state.grid[y][x] == 0 then
-        full_line = false
-        break
-      end
-    end
-    if full_line then
+    if Grid.isLineFull(self.state.grid[y]) then
+      linesClear = linesClear + 1
       table.remove(self.state.grid, y)
-      table.insert(self.state.grid, 1, {})
-      for x = 1, self.state.tileWidth do
-        self.state.grid[1][x] = 0
-      end
     end
+  end
+
+  if linesClear > 0 then
+    for _ = 1, linesClear do
+      table.insert(self.state.grid, 1, Grid.newRow(self.state.tileWidth))
+    end
+    self.actions.linesClear(linesClear)
   end
 end
 
@@ -69,8 +70,7 @@ function TileArea:update(dt)
       self:placeShape(self.state.currentShape)
       self:clearLines()
       self.actions:updateNextShape()
-      self.state.currentShape = self.state.currentShape
-      if not self:isValidMove(self.state.currentShape, 0 ,0) then
+      if not self:isValidMove(self.state.currentShape, 0, 0) then
         self.actions.gameOver()
       end
     end

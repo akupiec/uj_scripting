@@ -2,6 +2,7 @@ import fs from "fs";
 import nbt from "nbt";
 import { lz77Compress } from "./lz77Compress";
 import { encodeBase1023 } from "./encodeBase1023";
+import {toBeadRockEdition} from "../minecraft.blocks.lut";
 
 export function parseSchema(shemaFilePath: string) {
   return new Promise((resolve, reject) => {
@@ -30,7 +31,7 @@ export function parseSchema(shemaFilePath: string) {
       const encoded = encodeBase1023(compressed);
       const parsedData = {
         size: [data.value.Height.value, data.value.Width.value, data.value.Length.value],
-        palette: palette,
+        palette: palette && toBeadRockEdition(palette),
         data: encoded,
       };
 

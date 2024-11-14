@@ -11,7 +11,7 @@ BOARD_SIZE=3
 PC_MODE=1
 WINING_LENGTH=3
 EMPTY_CHAR='_'
-SAVE_FILE='autosave.txt'
+SAVE_FILE='out/autosave.txt'
 
 make_move() {
   local who=$1   #X or O

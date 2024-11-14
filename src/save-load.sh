@@ -26,6 +26,7 @@ read_board() {
 }
 
 save_board() {
+  mkdir -p "out"
   raw=(${boardArray//./\\n})
   echo "BOARD_SIZE=$BOARD_SIZE" > $SAVE_FILE
   echo "WINING_LENGTH=$WINING_LENGTH" >> $SAVE_FILE

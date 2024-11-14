@@ -3,9 +3,9 @@ clear_board() {
   for ((i = 0; i < $BOARD_SIZE; i++)); do
     for ((j = 0; j < $BOARD_SIZE; j++)); do
       boardArray+=$EMPTY_CHAR
-      [[ $j < $((BOARD_SIZE - 1)) ]] && boardArray+="|"
+      (( $j < $((BOARD_SIZE - 1)) )) && boardArray+="|"
     done
-    [[ $i < $((BOARD_SIZE - 1)) ]] && boardArray+="."
+    (( $i < $((BOARD_SIZE - 1)) )) && boardArray+="."
   done
   echo 'Generated new board'
 }

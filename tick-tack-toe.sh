@@ -7,7 +7,7 @@ source src/hex.sh
 
 boardArray=""
 
-BOARD_SIZE=4
+BOARD_SIZE=3
 WINING_LENGTH=3
 EMPTY_CHAR='_'
 SAVE_FILE='autosave.txt'
@@ -18,7 +18,7 @@ draw_board() {
 
   for ((i = 0; i < $BOARD_SIZE; i++)); do
     (($i == 0)) && echo -en "\t"
-    echo -n "$i "
+    echo -n $(num_to_hex $i)" "
   done
   echo
 
@@ -44,7 +44,7 @@ player_input() {
   local who=$1 #X or O
   assert "$([[ $who == 'X' || $who == 'O' ]] && echo 1)" "Invalid player!"
 
-  read -p "Enter move for player $who: " where
+  read -p "Enter cords for player $who: " where
 
   if ((${#where} != 2)); then
     echo "invalid cords length!"
@@ -69,11 +69,35 @@ player_input() {
   return 0
 }
 
+new_board() {
+  read -p "Enter board size from 3 to 16 [$BOARD_SIZE]: " size
+  BOARD_SIZE=${size:-$BOARD_SIZE}
+  if (($BOARD_SIZE < 3 || $BOARD_SIZE > 16)); then
+    echo "Invalid board size"
+    new_board
+    return 0;
+  fi
+  echo "New Board size: $BOARD_SIZE"
+
+  read -p "Enter win length condition size from 3 to $BOARD_SIZE [$WINING_LENGTH]: " win
+  WINING_LENGTH=${win:-$WINING_LENGTH}
+  if (($WINING_LENGTH < 3 || $WINING_LENGTH > $BOARD_SIZE)); then
+    echo "Invalid win size"
+    new_board
+    return 0;
+  fi
+  echo "New win condition size: $WINING_LENGTH"
+  echo "-----------------------------"
+  echo
+
+  clear_board
+}
+
 main() {
   clear_console
   welcome_info
 #  read_board
-  clear_board
+  new_board
   draw_board
 
   local next_move="X"

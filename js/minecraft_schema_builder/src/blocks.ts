@@ -14,7 +14,7 @@ export function cleanSpace(sPos: Position, size: number[]) {
 function blockRef(idx: number) {
   if (!data.palette) return -1;
   const b: string = data.palette[blockData[idx]];
-  if (!b) return -2;
+  if (!b) return 0;
   if (b.includes("[")) return -1;
   return blocks.blockByName(data.palette[blockData[idx]]);
 }

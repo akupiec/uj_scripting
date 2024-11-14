@@ -6,8 +6,7 @@ welcome_info() {
 Game support auto-saving functionality
 There is option to continue upon restart
 
-AI player is dumb as a brick :[
-at least for first iteration ];)
+AI player is dumb as a brick but works :[
 
 -----------------------------------------
 

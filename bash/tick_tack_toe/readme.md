@@ -1,7 +1,6 @@
 # Run options
 
-It should be safe to assume if there is bash on given OS it all should work...
-n the other hand It was developed and tested on MacOS therefore I provide 2 options to execute script
+There should not be any exotic dependencies but to be sure I provide docker runner as a backup
 
 ## Unix with bash
 

@@ -1,4 +1,3 @@
--- board.lua
 local Board = {}
 Board.__index = Board
 

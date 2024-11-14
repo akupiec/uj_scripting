@@ -1,4 +1,3 @@
--- main.lua
 local Board = require("board")
 local Shape = require("shape")
 
@@ -17,7 +16,9 @@ function love.load()
 end
 
 function love.update(dt)
-  if game_over then return end
+  if game_over then
+    return
+  end
   drop_timer = drop_timer + dt
   if drop_timer >= drop_interval then
     drop_timer = 0
@@ -35,16 +36,20 @@ function love.update(dt)
 end
 
 function love.draw()
-  board:draw()
-  current_shape:draw(board.tile_size)
   if game_over then
     love.graphics.setColor(1, 0, 0)
     love.graphics.printf("Game Over", 0, Board.height * Board.tile_size / 2 - 10, Board.width * Board.tile_size, "center")
+  else
+    board:draw()
+    current_shape:draw(board.tile_size)
   end
 end
 
 function love.keypressed(key)
-  if game_over then return end
+  if game_over then
+    return
+  end
+
   if key == "left" and board:isValidMove(current_shape, -1, 0) then
     current_shape.x = current_shape.x - 1
   elseif key == "right" and board:isValidMove(current_shape, 1, 0) then

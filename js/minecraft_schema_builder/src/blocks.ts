@@ -12,11 +12,9 @@ export function cleanSpace(sPos: Position, size: number[]) {
 }
 
 function blockRef(idx: number) {
-  if (!data.palette) return -1;
   const b: string = data.palette[blockData[idx]];
-  if (!b) return 0;
-  if (b.includes("[")) return -1;
-  return blocks.blockByName(data.palette[blockData[idx]]);
+  if (!b) return 'air';
+  return b;
 }
 
 function buildAll(sPos: Position, start: number, end: number, size: number[]) {
@@ -28,23 +26,17 @@ function buildAll(sPos: Position, start: number, end: number, size: number[]) {
         if (n % 250 == 0) player.say("place block " + n + " of " + blockData.length);
 
         const b = blockRef(n);
-        if (b == -2) {
-          player.say(`BROKEN ${n} ${blockData[n]}`)
-          return;
-        }
-        if (b == AIR) continue;
+        if (b == 'air') continue;
 
         const p = sPos.add(pos(k, i, j));
-        if (b == -1) {
-          player.execute(`setblock ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${data.palette[blockData[n]]}`);
-        } else if (k < size[2] - 1 && blockData[n + 1] === blockData[i]) {
+        if (k < size[2] - 1 && blockData[n + 1] === blockData[n]) {
           multiblock++;
         } else if (multiblock != 0) {
           const p0 = p.add(pos(-multiblock, 0, 0));
-          blocks.fill(b, p0, p, FillOperation.Replace);
+          player.execute(`fill ${p0.getValue(0)} ${p0.getValue(1)} ${p0.getValue(2)} ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${b}`);
           multiblock = 0;
-        } else if (!blocks.testForBlock(b, p)) {
-          blocks.place(b, p);
+        } else {
+          player.execute(`setblock ${p.getValue(0)} ${p.getValue(1)} ${p.getValue(2)} ${b}`);
         }
       }
     }

@@ -1,18 +1,15 @@
-const capitalize = (s) => (s && String(s[0]).toUpperCase() + String(s).slice(1)) || "";
-const capitalizeAll = (s) => s.split("_").map(capitalize).join(" ");
-
-function wall(k, v) {
+function wall(k) {
   const trueName = k.replace(/_wall.*/, "");
-  return [v, `cobblestone_wall["wall_block_type":"${trueName}"]`];
+  return `cobblestone_wall["wall_block_type":"${trueName}"]`
 }
 
-function torch(k, v) {
+function torch(k) {
   const face = k.replace(/.*\[facing=(.*)\]/, "$1");
-  return [v, `torch["torch_facing_direction":"${face}"]`];
+  return `torch["torch_facing_direction":"${face}"]`
 }
 
-function trimMeta(k, v) {
-  return [v, capitalizeAll(k.replace(/\[.*/, ""))];
+function trimMeta(k) {
+  return k.replace(/\[.*/, "");
 }
 
 function axis(k) {
@@ -65,7 +62,7 @@ function removeSingleMeta(k, meta: string) {
 
 function slab(k: string) {
   if (k.includes("type=double")) {
-    return "Dark Oak Planks";
+    return "dark_oak_planks";
   }
   k = removeSingleMeta(metaMatchToStr(k, "type", "minecraft:vertical_half"), "waterlogged");
   return k.replace(/[\w_]+\[/, "oak_slab[");
@@ -92,7 +89,7 @@ const bed = (k: string) => {
 }
 
 function trapDoor(k: string) {
-  k = k.replace('oak_trapdoor', 'trapdoor')
+  k = k.replace(/^oak_trapdoor/, 'trapdoor')
   const k1 = metaConverter(k, "facing", "direction", {
     west: 1,
     east: 0,
@@ -105,6 +102,8 @@ function trapDoor(k: string) {
 }
 
 function door(k: string) {
+  if (k.includes("door[") && k.includes("half=upper")) return "air";
+
   const k1 = metaConverter(k, "facing", "direction", {
     east: 0,
     south: 1,
@@ -125,45 +124,49 @@ function stairs(k) {
   return removeSingleMeta(removeSingleMeta(k2, "shape"), "waterlogged",);
 }
 
+function missingBlockReplacer(k: string): string {
+  if (
+    k.includes("_air") ||
+    k.includes("spawner") ||
+    k.includes("seagrass") ||
+    k.includes("_wall_sign") ||
+    k.includes("head") ||
+    k.includes("_wall_banner")
+  )
+    return `air`;
+
+  if (k == 'bricks') return 'brick_block';
+  if (k.includes("smooth_sandstone")) return `sandstone["sand_stone_type":"smooth"]`;
+  if (k.includes("chiseled_sandstone")) return `sandstone["sand_stone_type":"heiroglyphs"]`;
+  if (k.includes("dripstone_block")) return `coal_block`;
+  if (k.includes("_fence")) return `nether_brick_fence`;
+  if (k.includes("candle")) return `torch`;
+  if (k.includes("calcite")) return `white_wool`;
+  if (k.includes("rooted_dirt") || k.includes('coarse_dirt') || k.includes("dirt_path")) return `dirt`;
+  if (k.includes("tuff")) return `cobblestone`;
+  if (k.includes("stone_bricks")) return `stonebrick`;
+  if (k.includes("stripped_mangrove_wood")) return `cobblestone`;
+
+  return k
+}
+
 export function parsePalette(schemaPalette: object) {
   return Object.fromEntries(
     Object.entries(schemaPalette).map(([k, v]) => {
       k = k.replace("minecraft:", "");
       v = v.value;
-      k = k.replace("polished_deepslate", "polished_andesite");
-      k = k.replace("cobbled_deepslate", "andesite");
+      k = missingBlockReplacer(k);
 
-      if (k.includes("_wall[")) return wall(k, v);
-      if (k.includes("_torch")) return torch(k, v);
+      if (k.includes("_wall[")) return [v, wall(k)];
+      if (k.includes("_torch")) return [v, torch(k)];
       if (k.includes("cake[")) return [v, metaMatchToStr(k, "bites", "bite_counter")];
       if (k.includes("end_rod[")) return [v, endRod(k)];
       if (k.includes("hay_block[") || k.includes("_wood[axis")) return [v, axis(k)];
       if (k.includes("_bed[")) return [v, bed(k)];
       if (k.includes("trapdoor[")) return [v, trapDoor(k)];
-      if (k.includes("door[") && k.includes("half=upper")) return [v, "Air"];
       if (k.includes("door[")) return [v, door(k),];
       if (k.includes("stairs[")) return [v, stairs(k)];
       if (k.includes("_slab[")) return [v, slab(k)];
-
-      if (
-        k.includes("_air") ||
-        k.includes("spawner") ||
-        k.includes("seagrass") ||
-        k.includes("_wall_sign") ||
-        k.includes("head") ||
-        k.includes("_wall_banner")
-      )
-        return [v, `Air`];
-
-      if (k.includes("dripstone_block")) return [v, `Coal Block`];
-      if (k.includes("_fence")) return [v, `Nether Brick Fence`];
-      if (k.includes("_bricks")) return [v, `Stone Bricks`];
-      if (k.includes("smooth")) return [v, capitalizeAll(k.replace("smooth", "")).trim()];
-      if (k.includes("candle")) return [v, `Torch`];
-      if (k.includes("calcite")) return [v, `White Wool`];
-      if (k.includes("rooted_dirt")) return [v, `Dirt`];
-      if (k.includes("tuff")) return [v, `Cobblestone`];
-      if (k.includes("stripped_mangrove_wood")) return [v, `Cobblestone`];
 
       if (
         k.includes("grass") ||
@@ -178,9 +181,9 @@ export function parsePalette(schemaPalette: object) {
         k.includes("button") ||
         k.includes("podzol")
       ) {
-        return trimMeta(k, v);
+        return [v, trimMeta(k)];
       }
-      return [v, capitalizeAll(k)];
+      return [v, k];
     }),
   );
 }
